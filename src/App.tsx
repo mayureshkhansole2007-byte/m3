@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { AuthProvider, useAuth } from './AuthContext';
-import { Navbar } from './components/Navbar';
-import { Sidebar } from './components/Sidebar';
-import { Dashboard } from './components/Dashboard';
-import { ChallengeView } from './components/ChallengeView';
-import { Leaderboard } from './components/Leaderboard';
-import { Profile } from './components/Profile';
-import { MiniGames } from './components/MiniGames';
-import { Toaster } from './components/ui/sonner';
-import { TooltipProvider } from './components/ui/tooltip';
+import { Navbar } from '@/components/Navbar';
+import { Sidebar } from '@/components/Sidebar';
+import { Dashboard } from '@/components/Dashboard';
+import { ChallengeView } from '@/components/ChallengeView';
+import { Leaderboard } from '@/components/Leaderboard';
+import { Profile } from '@/components/Profile';
+import { MiniGames } from '@/components/MiniGames';
+import { Toaster } from '@/components/ui/sonner';
+import { TooltipProvider } from '@/components/ui/tooltip';
 import { motion, AnimatePresence } from 'motion/react';
 
 type View = 'dashboard' | 'challenges' | 'leaderboard' | 'profile' | 'games';

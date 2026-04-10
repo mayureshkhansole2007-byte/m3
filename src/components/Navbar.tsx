@@ -1,7 +1,7 @@
 import React from 'react';
-import { useAuth } from '../AuthContext';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { Badge } from './ui/badge';
+import { useAuth } from '@/AuthContext';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import { Flame, Trophy, Zap } from 'lucide-react';
 
 export const Navbar: React.FC = () => {

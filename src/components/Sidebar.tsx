@@ -1,7 +1,7 @@
 import React from 'react';
 import { LayoutDashboard, Code2, Trophy, User, Gamepad2, LogOut } from 'lucide-react';
-import { cn } from '../lib/utils';
-import { useAuth } from '../AuthContext';
+import { cn } from '@/lib/utils';
+import { useAuth } from '@/AuthContext';
 
 interface SidebarProps {
   currentView: string;

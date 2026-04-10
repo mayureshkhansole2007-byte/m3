@@ -1,8 +1,8 @@
 import React from 'react';
-import { useAuth } from '../AuthContext';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card';
-import { Progress } from './ui/progress';
-import { Badge } from './ui/badge';
+import { useAuth } from '@/AuthContext';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { Badge } from '@/components/ui/badge';
 import { motion } from 'motion/react';
 import { Rocket, Shield, Brain, Code, ArrowRight, Star } from 'lucide-react';
 
