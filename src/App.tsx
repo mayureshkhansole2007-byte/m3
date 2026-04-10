@@ -14,7 +14,7 @@ import { motion, AnimatePresence } from 'motion/react';
 type View = 'dashboard' | 'challenges' | 'leaderboard' | 'profile' | 'games';
 
 function AppContent() {
-  const { user, profile, loading, signIn } = useAuth();
+  const { user, profile, loading, signingIn, signIn } = useAuth();
   const [currentView, setCurrentView] = useState<View>('dashboard');
   const [selectedChallengeId, setSelectedChallengeId] = useState<string | null>(null);
 
@@ -47,10 +47,19 @@ function AppContent() {
           </p>
           <button
             onClick={signIn}
-            className="w-full py-3 px-6 bg-primary text-primary-foreground rounded-xl font-semibold hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+            disabled={signingIn}
+            className="w-full py-3 px-6 bg-primary text-primary-foreground rounded-xl font-semibold hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
           >
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-5 h-5" alt="Google" />
-            Sign in with Google
+            {signingIn ? (
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                className="w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full"
+              />
+            ) : (
+              <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-5 h-5" alt="Google" />
+            )}
+            {signingIn ? 'Signing in...' : 'Sign in with Google'}
           </button>
         </motion.div>
       </div>

@@ -8,6 +8,7 @@ interface AuthContextType {
   user: User | null;
   profile: UserProfile | null;
   loading: boolean;
+  signingIn: boolean;
   signIn: () => Promise<void>;
   logout: () => Promise<void>;
   updateProfile: (updates: Partial<UserProfile>) => Promise<void>;
@@ -19,6 +20,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [signingIn, setSigningIn] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
@@ -85,10 +87,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const signIn = async () => {
+    if (signingIn) return;
+    setSigningIn(true);
     try {
       await signInWithPopup(auth, googleProvider);
-    } catch (error) {
-      console.error('Sign in error:', error);
+    } catch (error: any) {
+      if (error.code !== 'auth/cancelled-popup-request' && error.code !== 'auth/popup-closed-by-user') {
+        console.error('Sign in error:', error);
+      }
+    } finally {
+      setSigningIn(false);
     }
   };
 
@@ -111,7 +119,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, profile, loading, signIn, logout, updateProfile }}>
+    <AuthContext.Provider value={{ user, profile, loading, signingIn, signIn, logout, updateProfile }}>
       {children}
     </AuthContext.Provider>
   );
