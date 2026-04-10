@@ -1,0 +1,93 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "Stores user progress, stats, and achievements.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Unique user ID" },
+        "displayName": { "type": "string", "description": "User's display name" },
+        "photoURL": { "type": "string", "description": "User's avatar URL" },
+        "level": { "type": "number", "description": "Current level" },
+        "xp": { "type": "number", "description": "Total experience points" },
+        "streak": { "type": "number", "description": "Current daily streak" },
+        "lastActive": { "type": "string", "format": "date-time", "description": "Last activity timestamp" },
+        "badges": { "type": "array", "items": { "type": "string" }, "description": "List of earned badge IDs" },
+        "completedChallenges": { "type": "array", "items": { "type": "string" }, "description": "List of completed challenge IDs" },
+        "skills": { 
+          "type": "object", 
+          "properties": {
+            "logic": { "type": "number" },
+            "syntax": { "type": "number" },
+            "algorithms": { "type": "number" },
+            "debugging": { "type": "number" }
+          }
+        }
+      },
+      "required": ["uid", "displayName", "level", "xp"]
+    },
+    "Challenge": {
+      "title": "Coding Challenge",
+      "description": "A specific coding task or puzzle.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "difficulty": { "type": "string", "enum": ["beginner", "intermediate", "advanced"] },
+        "category": { "type": "string", "enum": ["loops", "recursion", "data-structures", "debugging", "security"] },
+        "xpReward": { "type": "number" },
+        "initialCode": { "type": "string" },
+        "solution": { "type": "string" },
+        "testCases": { "type": "array", "items": { "type": "object" } }
+      },
+      "required": ["id", "title", "difficulty", "category", "xpReward"]
+    },
+    "LeaderboardEntry": {
+      "title": "Leaderboard Entry",
+      "description": "Publicly visible user stats for the leaderboard.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "xp": { "type": "number" },
+        "level": { "type": "number" }
+      },
+      "required": ["uid", "displayName", "xp", "level"]
+    },
+    "Quest": {
+      "title": "Collaborative Quest",
+      "description": "A team-based challenge.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "participants": { "type": "array", "items": { "type": "string" } },
+        "status": { "type": "string", "enum": ["active", "completed"] },
+        "targetXp": { "type": "number" },
+        "currentXp": { "type": "number" }
+      },
+      "required": ["id", "title", "status"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User's private profile and progress."
+    },
+    "/challenges/{challengeId}": {
+      "schema": "Challenge",
+      "description": "Global library of challenges."
+    },
+    "/leaderboard/{userId}": {
+      "schema": "LeaderboardEntry",
+      "description": "Publicly visible leaderboard data."
+    },
+    "/quests/{questId}": {
+      "schema": "Quest",
+      "description": "Shared collaborative quests."
+    }
+  }
+}

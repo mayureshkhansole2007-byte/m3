@@ -1,0 +1,143 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: users
+    // Document ID: {userId}
+    // Fields:
+    //   - uid: string (required)
+    //   - displayName: string (required)
+    //   - photoURL: string (optional)
+    //   - level: number (required)
+    //   - xp: number (required)
+    //   - streak: number (required)
+    //   - lastActive: string (ISO 8601)
+    //   - badges: list of strings
+    //   - completedChallenges: list of strings
+    //   - skills: map (logic, syntax, algorithms, debugging)
+    //
+    // Collection: challenges
+    // Document ID: {challengeId}
+    // Fields:
+    //   - id: string
+    //   - title: string
+    //   - description: string
+    //   - difficulty: string (beginner, intermediate, advanced)
+    //   - category: string
+    //   - xpReward: number
+    //   - initialCode: string
+    //   - solution: string
+    //   - testCases: list of maps
+    //
+    // Collection: leaderboard
+    // Document ID: {userId}
+    // Fields:
+    //   - uid: string
+    //   - displayName: string
+    //   - photoURL: string
+    //   - xp: number
+    //   - level: number
+    //
+    // Collection: quests
+    // Document ID: {questId}
+    // Fields:
+    //   - id: string
+    //   - title: string
+    //   - participants: list of strings
+    //   - status: string
+    //   - targetXp: number
+    //   - currentXp: number
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+          (request.auth.token.email == "mayureshkhansole2007@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    function isValidEmail(email) {
+      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    function isValidDateString(dateStr) {
+      return dateStr is string && dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.*Z?$");
+    }
+
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidUser(data) {
+      return data.uid == request.auth.uid &&
+             data.displayName is string && data.displayName.size() > 0 && data.displayName.size() < 100 &&
+             data.level is number && data.level >= 1 &&
+             data.xp is number && data.xp >= 0 &&
+             data.streak is number && data.streak >= 0;
+    }
+
+    function isValidLeaderboardEntry(data) {
+      return data.uid == request.auth.uid &&
+             data.displayName is string &&
+             data.xp is number &&
+             data.level is number;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    // Users collection
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId) && isValidUser(request.resource.data);
+      allow update: if isOwner(userId) && isValidUser(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    // Challenges collection
+    match /challenges/{challengeId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    // Leaderboard collection
+    match /leaderboard/{userId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isOwner(userId) && isValidLeaderboardEntry(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    // Quests collection
+    match /quests/{questId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated(); // Simplified for now, could be restricted to participants
+    }
+
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
